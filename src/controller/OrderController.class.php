@@ -5,69 +5,55 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Order;
-use App\Entity\Product;
+use App\Infrastructure\Database\Database;
+use App\Infrastructure\Repository\OrderRepository;
+use App\Transformer\OrderTransformer;
+use App\Transformer\OrderProductTransformer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController
 {
-    /**
-     * @return Response
-     */
-    public static function getOrders(): Response
+    private OrderRepository $order_repository;
+
+    public function __construct()
     {
-        $order = new Order(
-            '0129e936-a377-48f5-b9af-902e25f2477b',
-            new \DateTimeImmutable(),
-            'Test Order',
-            100.0,
-            'CZK',
-            1,
-            [
-                new Product(
-                    'Test Product',
-                    50.0,
-                    2
-                )
-            ]
+        $db = new Database(
+            "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'] . ";charset=utf8mb4",
+            $_ENV['DB_USER'],
+            $_ENV['DB_PASSWORD']
         );
 
-        return new JsonResponse(
-            json_encode($order->toArray()),
-            200,
-            [],
-            true
-        );
+        $this->order_repository = new OrderRepository($db->getConnection());
     }
 
-    /**
-     * @param string $id
-     * 
-     * @return Response
-     */
+    public static function getOrders(): Response
+    {
+        $self = new self();
+        $orders = $self->order_repository->getAllOrders();
+        if ($orders === []) {
+            return new JsonResponse(['error' => 'No orders found'], 200);
+        }
+
+        $output_array = [];
+        foreach ($orders as $order) {
+            $output_array[] = OrderTransformer::toApiStructure($order);
+        }
+
+        return new JsonResponse($output_array);
+    }
+
     public static function getOrderById(string $id): Response
     {
-        $order = new Order(
-            '0129e936-a377-48f5-b9af-902e25f2477b',
-            new \DateTimeImmutable(),
-            'Test Order by ID',
-            100.0,
-            'CZK',
-            1,
-            [
-                new Product(
-                    'Test Product',
-                    50.0,
-                    2
-                )
-            ]
-        );
+        $self = new self();
+        $order = $self->order_repository->getOrderById($id);
 
-        return new JsonResponse(
-            json_encode($order->toArray()),
-            200,
-            [],
-            true
-        );
+        if (!$order) {
+            return new JsonResponse(['error' => 'Order not found'], 404);
+        }
+        
+        $order_data = OrderTransformer::toApiStructure($order);
+
+        return new JsonResponse($order_data);
     }
 }

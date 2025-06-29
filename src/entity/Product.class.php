@@ -8,23 +8,41 @@ class Product
 {
     /**
      * @param string $name The name of the product.
-     * @param float $amount The price of the product.
-     * @param int $quantity The quantity of the product.
+     * @param float $price The price of the product.
      */
     public function __construct(
+        private string $id,
         private string $name,
-        private float $amount,
-        private int $quantity
+        private float $price,
+        private string $currency
     ) {
-        if ($amount < 0) {
-            throw new \InvalidArgumentException('Amount must be a positive float.');
+        if ($price < 0) {
+            throw new \InvalidArgumentException('Price must be a positive float.');
         }
-        if ($quantity < 0) {
-            throw new \InvalidArgumentException('Quantity must be a non-negative integer.');
-        }
+
+        $this->id = $id ?? '0';
         $this->name = $name ?? '';
-        $this->amount = $amount ?? 0.0;
-        $this->quantity = $quantity ?? 0;
+        $this->price = $price ?? 0.0;
+        $this->currency = $currency ?? 'CZK';
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id The unique identifier to set.
+     */
+    public function setId(string $id): void
+    {
+        if (empty($id)) {
+            throw new \InvalidArgumentException('ID cannot be empty.');
+        }
+        $this->id = $id;
     }
 
     /**
@@ -46,33 +64,40 @@ class Product
     /**
      * @return float
      */
-    public function getAmount(): float
+    public function getPrice(): float
     {
-        return $this->amount;
+        return $this->price;
     }
 
     /**
-     * @param float $amount The amount to set.
+     * @param float $price The price to set.
      */
-    public function setAmount(float $amount): void
+    public function setPrice(float $price): void
     {
-        $this->amount = $amount;
+        if ($price < 0) {
+            throw new \InvalidArgumentException('Price must be a positive float.');
+        }
+        $this->price = $price;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getQuantity(): int
+    public function getCurrency(): string
     {
-        return $this->quantity;
-    }
+        return $this->currency;
+    } 
 
     /**
-     * @param int $quantity The quantity to set.
+     * @param string $currency The currency to set.
      */
-    public function setQuantity(int $quantity): void
+    public function setCurrency(string $currency): void
     {
-        $this->quantity = $quantity;
+        if (empty($currency)) {
+            throw new \InvalidArgumentException('Currency cannot be empty.');
+        }
+
+        $this->currency = $currency;
     }
 
     /**
@@ -83,9 +108,10 @@ class Product
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'name' => $this->getName(),
-            'amount' => $this->getAmount(),
-            'quantity' => $this->getQuantity(),
+            'price' => $this->getPrice(),
+            'currency' => $this->getCurrency()
         ];
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Product;
+use App\Entity\OrderProduct;
 
 // In ideal world, this should be a database table containing all the options for statuses for easier scalability.
 // But for the sake of simplicity, we will use an enum here.
@@ -27,21 +27,25 @@ class Order
      * @param float $amount The total amount of the order.
      * @param string $currency The currency of the order amount.
      * @param int $status The status of the order.
-     * @param Product[] $items An array of OrderItem entities associated with the order.
+     * @param OrderProduct[] $items An array of OrderItem entities associated with the order.
      */
     public function __construct(
         private string $id,
         private \DateTimeImmutable $created_at,
         private string $name,
-        private float $amount,
+        private float $total_price,
         private string $currency,
         private int $status,
         private array $items
     ) {
+        if ($total_price < 0) {
+            throw new \InvalidArgumentException('Total price must be a positive float.');
+        }
+
         $this->id = $id ?? '0';
         $this->created_at = $created_at ?? new \DateTimeImmutable();
         $this->name = $name ?? '';
-        $this->amount = $amount ?? 0.0;
+        $this->total_price = $total_price ?? 0.0;
         $this->currency = $currency ?? 'CZK';
         $this->status = $status ?? Status::NEW->value;
         $this->items = $items ?? []; 
@@ -62,6 +66,9 @@ class Order
      */
     public function setId(string $id): void
     {
+        if (empty($id)) {
+            throw new \InvalidArgumentException('ID cannot be empty.');
+        }
         $this->id = $id;
     }
 
@@ -79,6 +86,9 @@ class Order
      */
     public function setCreatedAt(\DateTimeImmutable $created_at): void
     {
+        if (!$created_at instanceof \DateTimeImmutable) {
+            throw new \InvalidArgumentException('Created at must be an instance of DateTimeImmutable.');
+        }
         $this->created_at = $created_at;
     }
 
@@ -101,17 +111,20 @@ class Order
     /**
      * @return float
      */
-    public function getAmount(): float
+    public function getTotalPrice(): float
     {
-        return $this->amount;
+        return $this->total_price;
     }
 
     /**
      * @param float $amount The amount to set.
      */
-    public function setAmount(float $amount): void
+    public function setTotalPrice(float $total_price): void
     {
-        $this->amount = $amount;
+        if ($total_price < 0) {
+            throw new \InvalidArgumentException('Total price must be a positive float.');
+        }
+        $this->total_price = $total_price;
     }
     
     /**
@@ -147,7 +160,7 @@ class Order
     }
 
     /**
-     * @return Product[]
+     * @return OrderProduct[]
      */
     public function getItems(): array
     {
@@ -155,11 +168,24 @@ class Order
     }
 
     /**
-     * @param Product[] $items
+     * @param OrderProduct[] $items
      */
     public function setItems(array $items): void
     {
         $this->items = $items;
+    }
+
+    /**
+     * Adds an item to the order.
+     *
+     * @param OrderProduct $item The item to add to the order.
+     */
+    public function addItem(OrderProduct $item): void
+    {
+        if ($this->items === null) {
+            $this->items = [];
+        }
+        $this->items[] = $item;
     }
 
     /**
@@ -173,10 +199,10 @@ class Order
             'id' => $this->getId(),
             'created_at' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'name' => $this->getName(),
-            'amount' => $this->getAmount(),
+            'total_price' => $this->getTotalPrice(),
             'currency' => $this->getCurrency(),
             'status' => $this->getStatus(),
-            'items' => array_map(fn(Product $item) => $item->toArray(), $this->items),
+            'items' => array_map(fn(OrderProduct $item) => $item->toArray(), $this->items),
         ];
     }
 }    
