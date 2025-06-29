@@ -1,0 +1,41 @@
+services:
+  app:
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ../src:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=webnode_entry_task_db
+      - DB_USER=webnode_user
+      - DB_PASSWORD=SurelySafePassword123*
+
+  db:
+    image: mysql:8.3
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: webnode_entry_task_db
+      MYSQL_USER: webnode_user
+      MYSQL_PASSWORD: SurelySafePassword123*
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - mysqldata:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: webnode_user
+      PMA_PASSWORD: SurelySafePassword123*
+    depends_on:
+      - db
+
+volumes:
+  mysqldata:
