@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Orders API Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+        input, textarea, button { width: 100%; margin-top: 10px; padding: 8px; font-size: 1rem; }
+        textarea { height: 300px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Orders API Client</h1>
+
+    <form id="orderForm">
+        <label for="orderId">Order ID (leave empty to fetch all orders):</label>
+        <input type="text" id="orderId" name="orderId" placeholder="Enter order ID here..." />
+
+        <button type="submit">Fetch Orders</button>
+
+        <label for="responseArea">Response:</label>
+        <textarea id="responseArea" readonly></textarea>
+    </form>
+
+    <script>
+        const form = document.getElementById('orderForm');
+        const responseArea = document.getElementById('responseArea');
+        const orderIdInput = document.getElementById('orderId');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            responseArea.value = 'Loading...';
+
+            let url = '/rest-api/orders';
+            const id = orderIdInput.value.trim();
+            if (id !== '') {
+                url += '/' + encodeURIComponent(id);
+            }
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${text}`);
+                }
+                const data = await res.json();
+                responseArea.value = JSON.stringify(data, null, 2);
+            } catch (err) {
+                responseArea.value = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

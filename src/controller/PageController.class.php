@@ -10,6 +10,8 @@ class PageController
 {
     public static function index(): Response
     {
-        return new Response('Simple test if the routing works and dotenv test - DB name is ' . $_ENV['DB_NAME']);
+        $html = file_get_contents(__DIR__ . '/../public/index.html');
+
+        return new Response($html);
     }
 }
