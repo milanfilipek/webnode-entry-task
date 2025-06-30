@@ -54,6 +54,7 @@ Here are some improvements I considered but couldn't implement due to time const
 - The same goes for currencies, I think having them in DB would be better too, but since this is an entry task I decided to go the quicker way and save them as ISO codes
 - Using PHPStan for static code analysis and maybe using something like https://github.com/easy-coding-standard/easy-coding-standard for code style checking
 - Implement tests
+- Implementing performance metrics would be nice to have too
 
 ---
 
