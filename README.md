@@ -6,7 +6,7 @@ This repository contains my solution for the Webnode entry task.
 
 ## Project Description
 
-The goal of this task was to build a simple REST API endpoint for retrieving order data. During development, my main focus was on keeping the code clean and readable.
+The goal of this task was to build a simple REST API endpoint for retrieving order data. During development, my main focus was on keeping the code clean and readable. You can find the swagger documentation for the REST API endpoints here: https://app.swaggerhub.com/apis/freelancer-50e/webnode-entry-task-api/1.0.0
 
 ---
 
