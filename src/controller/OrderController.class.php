@@ -35,9 +35,9 @@ class OrderController
             return new JsonResponse(['error' => 'No orders found'], 200);
         }
 
-        $output_array = [];
+        $output_array['data'] = [];
         foreach ($orders as $order) {
-            $output_array[] = OrderTransformer::toApiStructure($order);
+            $output_array['data'][] = OrderTransformer::toApiStructure($order);
         }
 
         return new JsonResponse($output_array);
@@ -52,7 +52,7 @@ class OrderController
             return new JsonResponse(['error' => 'Order not found'], 404);
         }
         
-        $order_data = OrderTransformer::toApiStructure($order);
+        $order_data['data'] = OrderTransformer::toApiStructure($order);
 
         return new JsonResponse($order_data);
     }

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Starting the setup for the Webnode Entry Task..."
+
 echo "Starting docker-compose..."
 docker compose -f docker/docker-compose.yml up -d --build
 
@@ -15,8 +17,8 @@ until docker exec docker-app-1 php -v &>/dev/null; do
   sleep 1
 done
 
-echo "Running composer dump-autoload..."
-docker exec docker-app-1 composer dump-autoload -o
+echo "Running composer install..."
+docker exec docker-app-1 composer install --no-interaction --optimize-autoloader
 
 echo "Running Doctrine migrations..."
 docker exec docker-app-1 php vendor/bin/doctrine-migrations --configuration=config/doctrine_config.php migrate
