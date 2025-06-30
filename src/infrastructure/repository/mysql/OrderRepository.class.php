@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Repository;
+namespace App\Infrastructure\Repository\MySQL;
 
 use App\Domain\Repository\OrderRepositoryInterface;
 use App\Entity\Order;

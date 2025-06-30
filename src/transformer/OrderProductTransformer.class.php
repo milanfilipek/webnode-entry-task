@@ -15,7 +15,7 @@ class OrderProductTransformer
      * 
      * @return array The transformed order product data.
      */
-    public static function toApiStructure(array|OrderProduct $order_product): array
+    public static function toDto(array|OrderProduct $order_product): array
     {
         return [
             'product_id'       => $order_product->getProduct()->getId(),

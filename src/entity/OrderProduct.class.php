@@ -9,14 +9,16 @@ use App\Entity\Product;
 
 class OrderProduct
 {
+    /**
+     * @param Order $order The order associated with the product.
+     * @param Product $product The product being ordered.
+     * @param int $quantity The quantity of the product in the order.
+     */
     public function __construct(
         private Order $order, 
         private Product $product, 
         private int $quantity
     ) {
-        $this->order = $order ?? new Order();
-        $this->product = $product ?? new Product('', 0.0, 0);
-        $this->quantity = $quantity ?? 1;
     }
 
     /**

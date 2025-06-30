@@ -26,7 +26,7 @@ class Order
      * @param string $name The name of the order.
      * @param float $amount The total amount of the order.
      * @param string $currency The currency of the order amount.
-     * @param int $status The status of the order.
+     * @param Status $status The status of the order.
      * @param OrderProduct[] $items An array of OrderItem entities associated with the order.
      */
     public function __construct(
@@ -35,20 +35,9 @@ class Order
         private string $name,
         private float $total_price,
         private string $currency,
-        private int $status,
+        private Status $status,
         private array $items
     ) {
-        if ($total_price < 0) {
-            throw new \InvalidArgumentException('Total price must be a positive float.');
-        }
-
-        $this->id = $id ?? '0';
-        $this->created_at = $created_at ?? new \DateTimeImmutable();
-        $this->name = $name ?? '';
-        $this->total_price = $total_price ?? 0.0;
-        $this->currency = $currency ?? 'CZK';
-        $this->status = $status ?? Status::NEW->value;
-        $this->items = $items ?? []; 
     }
 
     /**
@@ -144,9 +133,9 @@ class Order
     }
 
     /**
-     * @return int
+     * @return Status
      */
-    public function getStatus(): int
+    public function getStatus(): Status
     {
         return $this->status;
     }
@@ -154,7 +143,7 @@ class Order
     /**
      * @param int $status The status to set.
      */
-    public function setStatus(int $status): void
+    public function setStatus(Status $status): Status
     {
         $this->status = $status;
     }

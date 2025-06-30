@@ -6,12 +6,15 @@ namespace App\Controller;
 
 use App\Entity\Order;
 use App\Infrastructure\Database\Database;
-use App\Infrastructure\Repository\OrderRepository;
+use App\Infrastructure\Repository\MySQL\OrderRepository;
 use App\Transformer\OrderTransformer;
 use App\Transformer\OrderProductTransformer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
+
+#[Route('/rest-api/orders')]
 class OrderController
 {
     private OrderRepository $order_repository;
@@ -27,6 +30,7 @@ class OrderController
         $this->order_repository = new OrderRepository($db->getConnection());
     }
 
+    #[Route('', name: 'get_orders', methods: ['GET'])]
     public static function getOrders(): Response
     {
         $self = new self();
@@ -37,12 +41,13 @@ class OrderController
 
         $output_array['data'] = [];
         foreach ($orders as $order) {
-            $output_array['data'][] = OrderTransformer::toApiStructure($order);
+            $output_array['data'][] = OrderTransformer::toDto($order);
         }
 
         return new JsonResponse($output_array);
     }
 
+    #[Route('/{id}', name: 'get_order', methods: ['GET'])]
     public static function getOrderById(string $id): Response
     {
         $self = new self();
@@ -52,7 +57,7 @@ class OrderController
             return new JsonResponse(['error' => 'Order not found'], 404);
         }
         
-        $order_data['data'] = OrderTransformer::toApiStructure($order);
+        $order_data['data'] = OrderTransformer::toDto($order);
 
         return new JsonResponse($order_data);
     }

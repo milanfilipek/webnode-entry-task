@@ -29,7 +29,7 @@ I used Git for version control. The commit history clearly separates the base fr
 
 ## Feedback on the Task
 
-- The task was clearly described and allowed me to showcase my approach and skills.  
+- The task was clearly described.
 - I appreciated the requirement to keep a clean commit history, which encouraged incremental and disciplined work.  
 - Time spent: approximately **~5 hours**  
 - Overall, I found the task to be a good opportunity to demonstrate my abilities.

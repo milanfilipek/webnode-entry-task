@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Factory\Order;
 
 use App\Entity\Order;
+use App\Entity\Status;
 
 class OrderFactory
 {
@@ -22,7 +23,7 @@ class OrderFactory
             $row['name'],
             floatval($row['total_price']),
             $row['currency'],
-            intval($row['status']),
+            Status::tryFrom($row['status']) ?? Status::NEW,
             []
         );
     }

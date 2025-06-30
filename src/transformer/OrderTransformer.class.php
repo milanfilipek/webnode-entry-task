@@ -16,7 +16,7 @@ class OrderTransformer
      * 
      * @return array The transformed order data.
      */
-    public static function toApiStructure(array|Order $order): array
+    public static function toDto(array|Order $order): array
     {
         return [
             'id'          => $order->getId(),
@@ -26,7 +26,7 @@ class OrderTransformer
             'currency'    => $order->getCurrency(),
             'status'      => $order->getStatus(),
             'items'       => array_map(
-                fn($order_product) => OrderProductTransformer::toApiStructure($order_product),
+                fn($order_product) => OrderProductTransformer::toDto($order_product),
                 $order->getItems()
             ),
         ];

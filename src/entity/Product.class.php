@@ -7,8 +7,10 @@ namespace App\Entity;
 class Product
 {
     /**
+     * @param string $id The unique identifier of the product.
      * @param string $name The name of the product.
      * @param float $price The price of the product.
+     * @param string $currency The currency of the product price.
      */
     public function __construct(
         private string $id,
@@ -16,14 +18,6 @@ class Product
         private float $price,
         private string $currency
     ) {
-        if ($price < 0) {
-            throw new \InvalidArgumentException('Price must be a positive float.');
-        }
-
-        $this->id = $id ?? '0';
-        $this->name = $name ?? '';
-        $this->price = $price ?? 0.0;
-        $this->currency = $currency ?? 'CZK';
     }
 
     /**
