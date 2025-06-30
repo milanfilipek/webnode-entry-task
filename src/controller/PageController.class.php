@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public static function index(): Response
+    public function index(): Response
     {
         $html = file_get_contents(__DIR__ . '/../public/index.html');
 

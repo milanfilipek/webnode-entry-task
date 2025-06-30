@@ -14,6 +14,9 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\AttributeDirectoryLoader;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+
 $dotenv = new Dotenv();
 $dotenv->load(dirname(__DIR__) . '/.env');
 
@@ -31,6 +34,11 @@ $routes = $loader->load(dirname(__DIR__) . '/controller');
 
 $matcher = new UrlMatcher($routes, $context);
 
+$container_builder = new ContainerBuilder();
+$php_file_loader = new PhpFileLoader($container_builder, new FileLocator(dirname(__DIR__) . '/config'));
+$php_file_loader->load('services.php');
+$container_builder->compile();
+
 try {
     $parameters = $matcher->match($request->getPathInfo());
 
@@ -39,9 +47,9 @@ try {
 
     [$controller_class, $controller_method] = explode('::', $controller_string);
 
-    $controller_instance = new $controller_class();
-
+    $controller_instance = $container_builder->get($controller_class);
     $response = $controller_instance->$controller_method(...array_values($parameters));
+
 } catch (ResourceNotFoundException $e) {
     $response = new Response('Request resource wasn\'t found. Please check if your specified URL is correct.', 404);
 } catch (InvalidArgumentException $e) {

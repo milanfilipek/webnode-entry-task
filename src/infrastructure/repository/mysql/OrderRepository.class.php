@@ -10,10 +10,17 @@ use App\Entity\OrderProduct;
 use App\Factory\Order\OrderFactory;
 use App\Factory\OrderProduct\OrderProductFactory;
 use App\Factory\Product\ProductFactory;
+use App\Infrastructure\Database\Database;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    public function __construct(private \PDO $pdo) {}
+    private \PDO $pdo_db;
+
+    public function __construct(Database $db)
+    {
+        $this->pdo_db = $db->getConnection();
+    }
+    // ...
 
     /**
      * Retrieves all orders from the database.
@@ -22,7 +29,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function getAllOrders(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM orders");
+        $stmt = $this->pdo_db->query("SELECT * FROM orders");
         $orders_raw = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         $orders = [];
@@ -32,7 +39,7 @@ class OrderRepository implements OrderRepositoryInterface
             $orders[$order->getId()] = $order;
         }
 
-        $stmt = $this->pdo->query("
+        $stmt = $this->pdo_db->query("
             SELECT o2p.order_id, o2p.product_id, o2p.quantity, p.*
             FROM orders2products o2p
             JOIN products p ON o2p.product_id = p.id
@@ -65,7 +72,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function getOrderById(string $id): ?Order
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE id = ?");
+        $stmt = $this->pdo_db->prepare("SELECT * FROM orders WHERE id = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -75,7 +82,7 @@ class OrderRepository implements OrderRepositoryInterface
 
         $order = OrderFactory::fromDbRow($row);
 
-        $stmt_products = $this->pdo->prepare("
+        $stmt_products = $this->pdo_db->prepare("
             SELECT o2p.quantity AS quantity, o2p.order_id, o2p.product_id, p.*
             FROM orders2products o2p 
             JOIN products p ON o2p.product_id = p.id 
