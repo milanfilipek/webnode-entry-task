@@ -44,6 +44,8 @@ try {
     $response = $controller_instance->$controller_method(...array_values($parameters));
 } catch (ResourceNotFoundException $e) {
     $response = new Response('Request resource wasn\'t found. Please check if your specified URL is correct.', 404);
+} catch (InvalidArgumentException $e) {
+    $response = new Response('Invalid argument provided: ' . $e->getMessage(), 400);
 } catch (Throwable $e) {
     $response = new Response('An error occurred during runtime: ' . $e->getMessage(), 500);
 }
