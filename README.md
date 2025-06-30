@@ -53,6 +53,7 @@ Here are some improvements I considered but couldn't implement due to time const
 - As I mentioned in the code - having the statuses saved in database and then have them as a foreign key would make it a bit cleaner too (way easier scalability)
 - The same goes for currencies, I think having them in DB would be better too, but since this is an entry task I decided to go the quicker way and save them as ISO codes
 - Using PHPStan for static code analysis and maybe using something like https://github.com/easy-coding-standard/easy-coding-standard for code style checking
+- Implement tests
 
 ---
 
